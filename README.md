@@ -1,5 +1,5 @@
 # CMPT365_Project
 Group Members:
 
-George Giovanis
+George Giovanis  
 Vincent Law
