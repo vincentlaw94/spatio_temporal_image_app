@@ -7,11 +7,6 @@ Vincent Law
 ### Installation
 Install flask https://flask.palletsprojects.com/en/1.1.x/installation/
 
-Install virtual env 
-```
-python3 -m venv venv
-
-```
 
 ### To run back-end:
 * Activate your virtual environment in a python terminal
