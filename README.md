@@ -25,3 +25,10 @@ On Windows
  env FLASK_APP=setup.py python -m flask run
 
 ```
+
+### To run front-end:
+* open another terminal
+```
+cd client  
+npm start
+```
