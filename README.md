@@ -17,17 +17,16 @@ On Windows
 ```
 > venv\Scripts\activate
 ```
-* Start flask server:
+Start flask server:
 * `$ export FLASK_APP=setup.py` 
 * `$ flask run`
 
 ```
  env FLASK_APP=setup.py python -m flask run
-
 ```
 
 ### To run front-end:
-* open another terminal
+open another terminal
 ```
 cd client  
 npm start
