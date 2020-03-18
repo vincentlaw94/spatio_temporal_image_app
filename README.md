@@ -9,7 +9,7 @@ Vincent Law
 * Activate environment 
 * Install dependencies 
 ```
-pip install -r requirements.txy
+pip install -r requirements.txt
 ```
 
 
