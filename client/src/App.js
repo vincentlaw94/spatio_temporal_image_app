@@ -7,10 +7,11 @@ import axios from 'axios'
 
 
 function App() {
-  const [x] = useState([]);
+  const [x, setX] = useState([]);
   useEffect(() => {
     fetch('/a').then(res => res.json()).then(data => {
       console.log(data['h']);
+      setX(data['h'])
     });
   }, []);
 

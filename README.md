@@ -5,7 +5,13 @@ George Giovanis
 Vincent Law 
 
 ### Installation
-Install flask https://flask.palletsprojects.com/en/1.1.x/installation/
+Install virtualenv
+Activate environment 
+Install dependencies 
+```
+pip install -r requirements.txy
+```
+
 
 
 ### To run back-end:
