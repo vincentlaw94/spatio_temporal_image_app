@@ -5,9 +5,9 @@ George Giovanis
 Vincent Law 
 
 ### Installation
-Install virtualenv
-Activate environment 
-Install dependencies 
+* Install virtualenv
+* Activate environment 
+* Install dependencies 
 ```
 pip install -r requirements.txy
 ```
