@@ -1,5 +1,5 @@
 from flask import Flask, Blueprint, request, render_template
-from app import opencv
+from app import api
 
 def create_app():
     """ Factory function to start application  """
@@ -14,5 +14,5 @@ def create_app():
     return app
 
 def register_blueprints(app):
-    app.register_blueprint(opencv.routes.main)
+    app.register_blueprint(api.routes.main)
     

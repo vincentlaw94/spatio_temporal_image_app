@@ -1,5 +1,6 @@
 import React from 'react'
 import Dropzone from 'react-dropzone'
+import axios from 'axios';
 
 const maxVideoSize = 1000000;
 const acceptedTypes = "video/mp4";
@@ -27,6 +28,12 @@ class DropZone extends React.Component {
         }
         //Handle Videos
         else {
+            var formData = new FormData()
+            formData.append("file", files[0])
+            axios
+                .post('/upload', formData)
+                .then(res => console.log(res))
+                .catch(err => console.warn(err))
             console.log(files);
         }
     }
