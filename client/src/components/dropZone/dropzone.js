@@ -1,6 +1,7 @@
-import React from 'react'
-import Dropzone from 'react-dropzone'
+import React from 'react';
+import Dropzone from 'react-dropzone';
 import axios from 'axios';
+import './dropzone.css'
 
 const maxVideoSize = 1000000;
 const acceptedTypes = "video/mp4";

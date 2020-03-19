@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
 import axios from 'axios';
-import DropZone from './components/dropzone.js';
+import DropZone from './components/dropZone/dropzone.js';
+import VideoPlayer from './components/videoPlayer/videoPlayer.js'
 
 
 function App() {
@@ -14,9 +15,15 @@ function App() {
   }, []);
 
   return (
-    <div class="inputBox">
-      <DropZone />
-    </div>
+    <React.Fragment>
+      <div className='videoPlayerBox'>
+        <VideoPlayer />
+      </div>
+
+      <div className="inputBox">
+        <DropZone />
+      </div>
+    </React.Fragment>
   );
 }
 
