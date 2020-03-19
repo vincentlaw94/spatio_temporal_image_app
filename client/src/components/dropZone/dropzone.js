@@ -36,13 +36,15 @@ class DropZone extends React.Component {
                 .then(res => console.log(res))
                 .catch(err => console.warn(err))
             console.log(files);
+            this.props.URLCallback(files[0]);
         }
     }
 
     render() {
         return(
             <Dropzone 
-                onDrop={this.handleOnDrop} accept={acceptedTypes} 
+                onDrop={this.handleOnDrop} 
+                accept={acceptedTypes} 
                 multiple={false} 
                 maxSize={maxVideoSize}
             >

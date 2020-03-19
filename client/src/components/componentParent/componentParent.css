@@ -1,0 +1,17 @@
+.videoPlayerBox {
+    position: absolute; 
+    top:5%;
+    left: 25%;
+    width: 50%;
+    color: white;
+    background-image: url(../videoPlayer/NoSignal.gif);
+    text-align: center;
+}
+  
+.inputBox {
+    position: absolute;
+    left: 25%;
+    top: 70%;
+    height: 25%;
+    width: 50%;
+}
