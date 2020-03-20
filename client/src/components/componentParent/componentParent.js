@@ -12,8 +12,9 @@ class ComponentParent extends React.Component {
     }
 
     updateURLCallback = (link) => {
+        console.log('update')
         this.setState({
-            URL: 'https://www.youtube.com/watch?v=Yw6u6YkTgQ4' // Dummy URL, needs to be updated with the URL of the upload
+            URL: '/get_video/small.mp4' // Dummy URL, needs to be updated with the URL of the upload
         });
     }
 

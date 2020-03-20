@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_from_directory, abort
 
 import os
 
@@ -26,3 +26,13 @@ def upload():
            
     #return response
     return "fail"
+
+
+@main.route('/get_video/<file_name>')
+def get_video(file_name):
+    print(file_name)
+    try:
+        return send_from_directory(uploads_dir, file_name)
+    except FileNotFoundError:
+        abort(404)
+        
