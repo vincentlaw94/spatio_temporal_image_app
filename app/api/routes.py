@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, send_from_directory, abort
 
 import os
+import app.api.utilities.transitionDetector as detector
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 uploads_dir = os.path.join(APP_ROOT, 'uploads')
@@ -20,6 +21,7 @@ def upload():
         if request.files:
             file = request.files["file"]
             file.save(os.path.join(uploads_dir,file.filename))
+            detector.generateSTImg(os.path.join(uploads_dir,file.filename))
             #return response
             return "success"
 
