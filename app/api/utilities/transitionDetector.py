@@ -1,15 +1,19 @@
 import numpy as np
 import cv2
+import os
+
+APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-
-#Generate a Spatio-Temportal Image from the video at videoPath
+#Generate and Save a Spatio-Temportal Image from the video at videoPath
 def generateSTImg(videoPath):
     video = cv2.VideoCapture(videoPath)
     STI = readFrames(video)
+    STI *= 255
+    cv2.imwrite( APP_ROOT + '/images/STI.jpg', STI )
 
 
-#Read frames sequentially to generate a Spatio-Temporal Image
+#Read frames sequentially to generate an STI
 def readFrames(video):
     frameCount = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
     STI = np.zeros( (31 , frameCount) ) #Skips first frame
