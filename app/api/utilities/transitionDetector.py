@@ -7,6 +7,7 @@ APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Generate and Save a Spatio-Temportal Image from the video at videoPath
 def generateSTImg(videoPath):
+    print(videoPath)
     video = cv2.VideoCapture(videoPath)
     STI = readFrames(video)
     STI *= 255
@@ -54,11 +55,11 @@ def generateSTImgColumn(frame):
 # Assumes Hold and Hnew are 6 x 6 Chromaticity Histograms
 def histogramIntersection(Hold, Hnew):
     I = 0
-    for i in range(5):
-        for j in range(5):
-            I += (min(Hold[i-1, j-1], Hnew[i-1, j-1])) / 36
+    for i in range(10):
+        for j in range(10):
+            I += (min(Hold[i, j], Hnew[i, j])) / 100  #Normalization
     return I
-
+ 
 
 # Create a 2D luminence histogram from a frame column
 def makeLuminenceHistogram(column):
@@ -68,7 +69,7 @@ def makeLuminenceHistogram(column):
         chromaticity = RGBtoChromaticity(column[i])
         rVals.append(chromaticity[0, 0])
         gVals.append(chromaticity[0, 1])
-    hist = np.histogram2d(rVals, gVals, bins=6, range=[
+    hist = np.histogram2d(rVals, gVals, bins=10, range=[
                           [0, 1], [0, 1]], density=1)
     return hist[0]
 
