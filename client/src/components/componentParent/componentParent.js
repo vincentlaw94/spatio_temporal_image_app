@@ -5,11 +5,14 @@ import SelectVideo from "../select/selectVideo.js";
 import SelectSTI from "../select/selectSTI.js";
 import { connect } from "react-redux";
 import Axios from "axios";
+import { toggleMSG } from "../../actions";
 
 import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
 import { withStyles } from "@material-ui/core/styles";
 
 const styles = theme => ({
@@ -33,6 +36,7 @@ class ComponentParent extends React.Component {
       sti: undefined
     };
     this.handleClick.bind(this);
+    this.handleClose.bind(this);
   }
   handleClick = e => {
     e.preventDefault();
@@ -40,6 +44,14 @@ class ComponentParent extends React.Component {
 
     Axios.get(url).then(res => console.log(res));
     this.setState({ sti: url });
+  };
+
+  handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    this.props.toggleMSG();
   };
   render() {
     const { classes } = this.props;
@@ -58,6 +70,16 @@ class ComponentParent extends React.Component {
               <SelectVideo />
               <SelectSTI />
               <DropZone URLCallback={this.updateURLCallback} />
+              {/* notification message for uploading videos. BUG: theres a delay  */}
+              <Snackbar
+                open={this.props.open}
+                autoHideDuration={2000}
+                onClose={this.handleClose}
+              >
+                <Alert onClose={this.handleClose} severity="success">
+                  Successfully Uploaded Video
+                </Alert>
+              </Snackbar>
             </Paper>
             <Button
               className={classes.button}
@@ -78,8 +100,14 @@ class ComponentParent extends React.Component {
 function mapStateToProps(state) {
   return {
     URL: state.videoList.URL,
-    fileName: state.videoList.fileName
+    fileName: state.videoList.fileName,
+    open: state.videoList.toggleMSG
   };
 }
+const mapDispatchToProps = {
+  toggleMSG
+};
 
-export default withStyles(styles)(connect(mapStateToProps)(ComponentParent));
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(ComponentParent)
+);

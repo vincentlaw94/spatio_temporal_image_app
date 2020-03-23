@@ -3,7 +3,7 @@ import Dropzone from "react-dropzone";
 import axios from "axios";
 import "./dropzone.css";
 import { connect } from "react-redux";
-import { addVideo } from "../../actions";
+import { addVideo, toggleMSG } from "../../actions";
 
 const maxVideoSize = 10000000;
 const acceptedTypes = "video/mp4";
@@ -45,7 +45,7 @@ class DropZone extends React.Component {
       formData.append("file", files[0]);
       axios
         .post("/upload", formData)
-        .then(res => console.log(res))
+        .then(res => this.props.toggleMSG())
         .catch(err => console.warn(err));
     }
   };
@@ -78,4 +78,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { addVideo })(DropZone);
+export default connect(mapStateToProps, { addVideo, toggleMSG })(DropZone);

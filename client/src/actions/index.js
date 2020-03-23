@@ -18,3 +18,9 @@ export const setFileName = fileName => {
     payload: fileName
   };
 };
+
+export const toggleMSG = () => {
+  return {
+    type: "TOGGLE_MSG"
+  };
+};
