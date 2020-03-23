@@ -1,10 +1,12 @@
+/*
 .VideoPlayerInner {
-    position: relative; 
-    padding-top: 56.25%; /* Maintains 16:9 aspect ratio */
-}
+  position: relative;
+  padding-top: 56.25%; /* Maintains 16:9 aspect ratio */
+/*}
 
 .react-player {
-    position: absolute;
-    top: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
+*/

@@ -1,40 +1,70 @@
-from flask import Blueprint, request, jsonify, send_from_directory, abort
+from flask import Blueprint, request, jsonify, send_from_directory, abort, Response
 
 import os
 import app.api.utilities.transitionDetector as detector
 
+import numpy as np
+import cv2
+
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 uploads_dir = os.path.join(APP_ROOT, 'uploads')
+images_dir = os.path.join(APP_ROOT, 'images')
 
 main = Blueprint("main", __name__)
-@main.route('/a', methods=['GET'])
-def register():
-    print(APP_ROOT)
+@main.route('/', methods=['GET'])
+def generate(file_name):
 
-    return jsonify(h="hello world")
-    
+    file = os.path.join(uploads_dir, file_name)
 
-@main.route('/upload', methods = ['POST'])
+    cap = cv2.VideoCapture(file)
+    matrix = []
+    # loop over frames
+    while (True):
+
+        ret, frame = cap.read()
+        # end of video
+        if not ret:
+            break
+
+        frame = cv2.resize(frame, (32, 32))
+        # fill matrix with center colomn of each frame
+        col_array = [frame[i, 16] for i in range(32)]
+        matrix.append(col_array)
+        frame_column = np.asarray(matrix, dtype=np.uint8)
+
+        # encode the frame in JPEG format
+        (flag, encodedImage) = cv2.imencode(".jpg", frame_column)
+
+        # yield the output frame in the byte format
+        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+              bytearray(encodedImage) + b'\r\n')
+
+
+@main.route('/upload', methods=['POST'])
 def upload():
-   
+
     if request.method == 'POST':
         if request.files:
             file = request.files["file"]
-            file.save(os.path.join(uploads_dir,file.filename))
-            detector.generateSTImg(os.path.join(uploads_dir,file.filename))
-            #return response
+            file.save(os.path.join(uploads_dir, file.filename))
+            detector.generateSTImg(os.path.join(uploads_dir, file.filename))
+            # return response
             return "success"
 
-           
-    #return response
+    # return response
     return "fail"
+
+
+@main.route('/sti_feed/<file_name>')
+def sti_feed(file_name):
+
+    return Response(generate(file_name), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @main.route('/get_video/<file_name>')
 def get_video(file_name):
-    print(file_name)
+
     try:
         return send_from_directory(uploads_dir, file_name)
     except FileNotFoundError:
         abort(404)
-        

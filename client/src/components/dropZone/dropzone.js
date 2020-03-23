@@ -5,7 +5,7 @@ import "./dropzone.css";
 import { connect } from "react-redux";
 import { addVideo } from "../../actions";
 
-const maxVideoSize = 1000000;
+const maxVideoSize = 10000000;
 const acceptedTypes = "video/mp4";
 
 class DropZone extends React.Component {

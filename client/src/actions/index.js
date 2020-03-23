@@ -11,3 +11,10 @@ export const setURL = URL => {
     payload: URL
   };
 };
+
+export const setFileName = fileName => {
+  return {
+    type: "SET_FILENAME",
+    payload: fileName
+  };
+};

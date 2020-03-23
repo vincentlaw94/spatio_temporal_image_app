@@ -7,7 +7,7 @@ import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 
 import { useSelector, useDispatch } from "react-redux";
-import { setURL } from "../../actions";
+import { setURL, setFileName } from "../../actions";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -27,7 +27,7 @@ function SelectVideo() {
   const handleChange = event => {
     let URL = "/get_video/" + event.target.value;
     dispatch(setURL(URL));
-    console.log(URL);
+    dispatch(setFileName(event.target.value));
   };
 
   const classes = useStyles();

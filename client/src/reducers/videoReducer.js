@@ -1,6 +1,7 @@
 const initialVideoList = {
   videoList: [],
-  URL: undefined
+  URL: undefined,
+  fileName: undefined
 };
 const videoReducer = (state = initialVideoList, action) => {
   switch (action.type) {
@@ -8,6 +9,8 @@ const videoReducer = (state = initialVideoList, action) => {
       return { ...state, videoList: [...state.videoList, action.newItem] };
     case "SET_URL":
       return { ...state, URL: action.payload };
+    case "SET_FILENAME":
+      return { ...state, fileName: action.payload };
     default:
       return state;
   }
