@@ -16,14 +16,18 @@ def generateSTImg(videoPath):
 # Read frames sequentially to generate an STI
 def readFrames(video):
     frameCount = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    STI = np.zeros((31, frameCount))  # Skips first frame
     j = 0
     # Iterate through each frame to generate the STI
     while(video.isOpened()):
         ret, frame = video.read()
-        if(ret is False):
+        if(ret is False): 
             break  # End of video
-        STI[:, [j]] = generateSTImgColumn(frame)
+
+        if(j == 0):  
+            STI = generateSTImgColumn(frame)
+        else:
+            col = generateSTImgColumn(frame)
+            STI = np.c_[STI, col]
         j += 1
     return STI
 
@@ -46,7 +50,7 @@ def generateSTImgColumn(frame):
     return STIcol
 
 
-# Makes a column vector based on histogram difference
+# Returns a scalar I based on histogram difference
 # Assumes Hold and Hnew are 6 x 6 Chromaticity Histograms
 def histogramIntersection(Hold, Hnew):
     I = 0
