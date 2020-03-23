@@ -45,7 +45,7 @@ class DropZone extends React.Component {
       formData.append("file", files[0]);
       axios
         .post("/upload", formData)
-        .then(res => this.props.toggleMSG())
+        .then(this.props.toggleMSG())
         .catch(err => console.warn(err));
     }
   };

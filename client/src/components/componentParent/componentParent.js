@@ -16,6 +16,9 @@ import Alert from "@material-ui/lab/Alert";
 import { withStyles } from "@material-ui/core/styles";
 
 const styles = theme => ({
+  root: {
+    margin: 25
+  },
   paper: {
     padding: theme.spacing(2),
     margin: "auto",
@@ -56,7 +59,7 @@ class ComponentParent extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-      <Container>
+      <Container className={classes.root}>
         <Grid container spacing={2} alignItems="flex-start" justify="center">
           <Grid item>
             <Paper className={classes.paper}>
@@ -70,7 +73,7 @@ class ComponentParent extends React.Component {
               <SelectVideo />
               <SelectSTI />
               <DropZone URLCallback={this.updateURLCallback} />
-              {/* notification message for uploading videos. BUG: theres a delay  */}
+              {/* notification message for uploading videos. */}
               <Snackbar
                 open={this.props.open}
                 autoHideDuration={2000}
