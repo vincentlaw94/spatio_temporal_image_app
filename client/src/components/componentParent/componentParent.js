@@ -1,7 +1,8 @@
 import React from "react";
 import DropZone from "../dropZone/dropzone.js";
 import VideoPlayer from "../videoPlayer/videoPlayer.js";
-import SelectVideo from "../selectVideo/selectVideo.js";
+import SelectVideo from "../select/selectVideo.js";
+import SelectSTI from "../select/selectSTI.js";
 import { connect } from "react-redux";
 import Axios from "axios";
 
@@ -17,8 +18,11 @@ const styles = theme => ({
     margin: "auto",
     maxWidth: 500
   },
-  button: {
+  img: {
     margin: "auto"
+  },
+  button: {
+    margin: 10
   }
 });
 
@@ -41,18 +45,18 @@ class ComponentParent extends React.Component {
     const { classes } = this.props;
     return (
       <Container>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} alignItems="flex-start" justify="center">
           <Grid item>
             <Paper className={classes.paper}>
               <VideoPlayer url={this.props.URL} />
-              <img src={this.state.sti} />
+              <img className={classes.img} src={this.state.sti} />
             </Paper>
           </Grid>
 
           <Grid item>
             <Paper className={classes.paper}>
               <SelectVideo />
-
+              <SelectSTI />
               <DropZone URLCallback={this.updateURLCallback} />
             </Paper>
             <Button

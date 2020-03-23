@@ -31,9 +31,9 @@ def generate(file_name):
         col_array = [frame[i, 16] for i in range(32)]
         matrix.append(col_array)
         frame_column = np.asarray(matrix, dtype=np.uint8)
-
+        img = np.transpose(frame_column, (1, 0, 2))
         # encode the frame in JPEG format
-        (flag, encodedImage) = cv2.imencode(".jpg", frame_column)
+        (flag, encodedImage) = cv2.imencode(".jpg", img)
 
         # yield the output frame in the byte format
         yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
