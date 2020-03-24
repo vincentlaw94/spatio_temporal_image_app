@@ -5,48 +5,37 @@ import os
 APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Generate and Save a Spatio-Temportal Image from the video at videoPath
-def generateSTImg(videoPath):
-    print(videoPath)
+# Generate and Save a Spatio-Temportal Image (STI) from the video at videoPath
+def generateSTI(videoPath):
     video = cv2.VideoCapture(videoPath)
     STI = readFrames(video)
     STI *= 255
     cv2.imwrite(APP_ROOT + '/images/STI.jpg', STI)
 
 
-# Read frames sequentially to generate an STI
+# Read the video frame-by-frame to generate an STI
 def readFrames(video):
-    frameCount = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
-    j = 0
-    # Iterate through each frame to generate the STI
+    ret, oldFrame = video.read()
+    if not ret: raise Exception("Failed to read video")
+    STI = np.zeros((32, 1))
+
     while(video.isOpened()):
         ret, frame = video.read()
-        if(ret is False): 
-            break  # End of video
-
-        if(j == 0):  
-            STI = generateSTImgColumn(frame)
-        else:
-            col = generateSTImgColumn(frame)
-            STI = np.c_[STI, col]
-        j += 1
-    return STI
+        if(ret is False): break  # End of video
+        col = generateSTIColumn(frame, oldFrame)
+        STI = np.c_[STI, col]  
+        oldFrame = frame
+    return STI[:, 1:]
 
 
-# Process a frame and generate a column of the Spatio-Temporal Image
-# STIcol is filled top to bottom
-def generateSTImgColumn(frame):
-    frame = cv2.resize(frame, (32, 32))  # Resize to 32 cols x 32 rows
-    STIcol = np.zeros((31, 1))  # Col size is one less than frame's
+# Compares new and old frame column-by-bolumn to generate an STI column
+def generateSTIColumn(newFrame, oldFrame):
+    newFrame = cv2.resize(newFrame, (32, 32))  # Resize to 32 cols x 32 rows
+    oldFrame = cv2.resize(oldFrame, (32, 32))  # Resize to 32 cols x 32 rows
+    STIcol = np.zeros((32, 1))  
     for j in range(32):
-        if(j == 0):
-            Hold = makeLuminenceHistogram(frame[:, j])
-        elif(j == 1):
-            Hnew = makeLuminenceHistogram(frame[:, j])
-            STIcol[j-1, :] = histogramIntersection(Hold, Hnew)
-        else:
-            Hold = Hnew
-            Hnew = makeLuminenceHistogram(frame[:, j])
+            Hold = makeLuminenceHistogram(oldFrame[:, j])
+            Hnew = makeLuminenceHistogram(newFrame[:, j])
             STIcol[j-1, :] = histogramIntersection(Hold, Hnew)
     return STIcol
 

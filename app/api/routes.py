@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, send_from_directory, abort, Response
 
 import os
-import app.api.utilities.transitionDetector as detector
+import app.api.utilities.histDifferenceCol as histDiff
 
 import numpy as np
 import cv2
@@ -47,7 +47,7 @@ def upload():
         if request.files:
             file = request.files["file"]
             file.save(os.path.join(uploads_dir, file.filename))
-            detector.generateSTImg(os.path.join(uploads_dir, file.filename))
+            histDiff.generateSTI(os.path.join(uploads_dir, file.filename))
             # return response
             return "success"
 
