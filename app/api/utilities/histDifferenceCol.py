@@ -41,12 +41,12 @@ def generateSTIColumn(newFrame, oldFrame):
 
 
 # Returns a scalar I based on histogram difference
-# Assumes Hold and Hnew are 6 x 6 Chromaticity Histograms
+# Assumes Hold and Hnew are 10 x 10 Chromaticity Histograms
 def histogramIntersection(Hold, Hnew):
     I = 0
     for i in range(10):
         for j in range(10):
-            I += (min(Hold[i, j], Hnew[i, j])) / 100  #Normalization
+            I += (min(Hold[i, j], Hnew[i, j])) / 100  # Normalization
     return I
  
 

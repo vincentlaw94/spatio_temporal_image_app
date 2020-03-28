@@ -7,7 +7,7 @@ import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 
 import { useSelector, useDispatch } from "react-redux";
-import { setURL, setFileName } from "../../actions";
+import { setURL, setFileName , setSTI} from "../../actions";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -21,12 +21,22 @@ const useStyles = makeStyles(theme => ({
 
 function SelectSTI() {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const handleChange = event => {
+    let typeSTI = event.target.value;
+    dispatch(setSTI(typeSTI));
+  }
 
   const transition = ["Copying Pixels", "Histogram Differences"];
   return (
     <div>
       <FormControl className={classes.formControl}>
-        <Select displayEmpty className={classes.selectEmpty}>
+        <Select 
+          displayEmpty
+          onChange={handleChange}
+          className={classes.selectEmpty}
+        >
           <MenuItem value="" disabled>
             Select STI
           </MenuItem>

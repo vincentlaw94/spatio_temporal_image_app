@@ -12,6 +12,7 @@ images_dir = os.path.join(APP_ROOT, 'images')
 
 main = Blueprint("main", __name__)
 @main.route('/', methods=['GET'])
+
 def generate(file_name):
 
     file = os.path.join(uploads_dir, file_name)
@@ -55,9 +56,10 @@ def upload():
     return "fail"
 
 
-@main.route('/sti_feed/<file_name>')
-def sti_feed(file_name):
-
+@main.route('/sti_feed/<file_name>/<sti_type>')
+def sti_feed(file_name, sti_type):
+    print("PRINTING FILENAME:", file_name)
+    print("PRINTING STI TYPE:", sti_type)
     return Response(generate(file_name), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 

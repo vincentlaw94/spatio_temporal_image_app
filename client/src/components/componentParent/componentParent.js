@@ -43,7 +43,8 @@ class ComponentParent extends React.Component {
   }
   handleClick = e => {
     e.preventDefault();
-    const url = "/sti_feed/" + e.currentTarget.value;
+    const url = "/sti_feed/" + e.currentTarget.value + '/' + this.props.typeSTI;
+    const typeSTI = this.props.typeSTI;
 
     Axios.get(url).then(res => console.log(res));
     this.setState({ sti: url });
@@ -104,7 +105,8 @@ function mapStateToProps(state) {
   return {
     URL: state.videoList.URL,
     fileName: state.videoList.fileName,
-    open: state.videoList.toggleMSG
+    open: state.videoList.toggleMSG,
+    typeSTI: state.selection.typeSTI
   };
 }
 const mapDispatchToProps = {

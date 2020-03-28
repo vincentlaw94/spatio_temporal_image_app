@@ -24,3 +24,10 @@ export const toggleMSG = () => {
     type: "TOGGLE_MSG"
   };
 };
+
+export const setSTI = typeSTI => {
+  return {
+    type: "SET_STI",
+    payload: typeSTI
+  };
+};
