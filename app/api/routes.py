@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, send_from_directory, abort, Response
 
 import os
-import app.api.utilities.histDifferenceCol as histDiff
+import app.api.utilities.generateSTI as generateSTI
 
 import numpy as np
 import cv2
@@ -48,7 +48,6 @@ def upload():
         if request.files:
             file = request.files["file"]
             file.save(os.path.join(uploads_dir, file.filename))
-            histDiff.generateSTI(os.path.join(uploads_dir, file.filename))
             # return response
             return "success"
 
@@ -58,8 +57,8 @@ def upload():
 
 @main.route('/sti_feed/<file_name>/<sti_type>')
 def sti_feed(file_name, sti_type):
-    print("PRINTING FILENAME:", file_name)
-    print("PRINTING STI TYPE:", sti_type)
+    
+    generateSTI.generateSTI(os.path.join(uploads_dir, file_name), sti_type)
     return Response(generate(file_name), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
