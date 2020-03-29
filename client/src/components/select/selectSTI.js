@@ -28,7 +28,10 @@ function SelectSTI() {
     dispatch(setSTI(typeSTI));
   }
 
-  const transition = ["Copying Pixels", "Histogram Differences"];
+  const transition = ["Copy Pixels by Column", 
+                      "Copy Pixels by Row", 
+                      "Histogram Difference by Column", 
+                      "Histogram Difference by Row"];
   return (
     <div>
       <FormControl className={classes.formControl}>

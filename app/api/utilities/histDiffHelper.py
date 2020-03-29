@@ -1,14 +1,14 @@
 import numpy as np
 import cv2
 
-# Generate and Save a Spatio-Temportal Image (STI) by Column
+# Generate and Save a Spatio-Temportal Image (STI) by Row
 def generateByRow(videoPath):
     video = cv2.VideoCapture(videoPath)
     STI = readFrames(video, "row")
     return STI * 255
 
 
-# Generate and Save a Spatio-Temportal Image (STI) by Row
+# Generate and Save a Spatio-Temportal Image (STI) by Column
 def generateByCol(videoPath):
     video = cv2.VideoCapture(videoPath)
     STI = readFrames(video, "col")

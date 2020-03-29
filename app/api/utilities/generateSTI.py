@@ -6,9 +6,9 @@ APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def generateSTI(videoPath, typeSTI):
 
-    if(typeSTI == "Histogram Differences"):
+    if(typeSTI == "Histogram Difference by Column"):
         STI = histDiff.generateByCol(videoPath)
-    elif(typeSTI == "Histogram Differences by Row"):
+    elif(typeSTI == "Histogram Difference by Row"):
         STI = histDiff.generateByRow(videoPath)
 
     #Write to file

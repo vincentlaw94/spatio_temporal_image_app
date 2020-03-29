@@ -57,7 +57,6 @@ def upload():
 
 @main.route('/sti_feed/<file_name>/<sti_type>')
 def sti_feed(file_name, sti_type):
-    
     generateSTI.generateSTI(os.path.join(uploads_dir, file_name), sti_type)
     return Response(generate(file_name), mimetype='multipart/x-mixed-replace; boundary=frame')
 
