@@ -1,48 +1,60 @@
 import numpy as np
 import cv2
+from flask import Response
 
 # Generate and Save a Spatio-Temportal Image (STI) by Row
+
+
 def generateByRow(videoPath):
     video = cv2.VideoCapture(videoPath)
-    STI = readFrames(video, "row")
-    return STI * 255
+    return Response(readFrames(video, "row"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 # Generate and Save a Spatio-Temportal Image (STI) by Column
 def generateByCol(videoPath):
+
     video = cv2.VideoCapture(videoPath)
-    STI = readFrames(video, "col")
-    return STI * 255
+    return Response(readFrames(video, "col"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 # Read the video frame-by-frame to generate an STI
 def readFrames(video, mode):
     ret, oldFrame = video.read()
-    if not ret: raise Exception("Failed to read video")
+    if not ret:
+        raise Exception("Failed to read video")
     STI = np.zeros((32, 1))
 
     while(video.isOpened()):
         ret, frame = video.read()
-        if(ret is False): break  # End of video
+        if(ret is False):
+            break  # End of video
 
         # Generate the STI row by row or col by col
-        if  (mode == "row"): col = generateSTIColumnByRow(frame, oldFrame)
-        elif(mode == "col"): col = generateSTIColumnByCol(frame, oldFrame)
+        if (mode == "row"):
+            col = generateSTIColumnByRow(frame, oldFrame)
+        elif(mode == "col"):
+            col = generateSTIColumnByCol(frame, oldFrame)
 
-        STI = np.c_[STI, col]  
+        STI = np.c_[STI, col]
+
         oldFrame = frame
-    return STI[:, 1:]
+        # encode the frame in JPEG format
+        (flag, encodedImage) = cv2.imencode(".jpg", STI[:, 1:]*255)
+
+        # yield the output frame in the byte format
+        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+              bytearray(encodedImage) + b'\r\n')
 
 
 # Compares new and old frame column-by-bolumn to generate an STI column
 def generateSTIColumnByCol(newFrame, oldFrame):
     newFrame = cv2.resize(newFrame, (32, 32))  # Resize to 32 cols x 32 rows
     oldFrame = cv2.resize(oldFrame, (32, 32))  # Resize to 32 cols x 32 rows
-    STIcol = np.zeros((32, 1))  
+    STIcol = np.zeros((32, 1))
     for j in range(32):
-            Hold = makeLuminenceHistogram(oldFrame[:, j])
-            Hnew = makeLuminenceHistogram(newFrame[:, j])
-            STIcol[j-1, :] = histogramIntersection(Hold, Hnew)
+        Hold = makeLuminenceHistogram(oldFrame[:, j])
+        Hnew = makeLuminenceHistogram(newFrame[:, j])
+        STIcol[j-1, :] = histogramIntersection(Hold, Hnew)
     return STIcol
 
 
@@ -50,11 +62,11 @@ def generateSTIColumnByCol(newFrame, oldFrame):
 def generateSTIColumnByRow(newFrame, oldFrame):
     newFrame = cv2.resize(newFrame, (32, 32))  # Resize to 32 cols x 32 rows
     oldFrame = cv2.resize(oldFrame, (32, 32))  # Resize to 32 cols x 32 rows
-    STIcol = np.zeros((32, 1))  
+    STIcol = np.zeros((32, 1))
     for j in range(32):
-            Hold = makeLuminenceHistogram(oldFrame[j, :])
-            Hnew = makeLuminenceHistogram(newFrame[j, :])
-            STIcol[j-1, :] = histogramIntersection(Hold, Hnew)
+        Hold = makeLuminenceHistogram(oldFrame[j, :])
+        Hnew = makeLuminenceHistogram(newFrame[j, :])
+        STIcol[j-1, :] = histogramIntersection(Hold, Hnew)
     return STIcol
 
 
