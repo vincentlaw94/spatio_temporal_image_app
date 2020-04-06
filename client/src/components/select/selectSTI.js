@@ -33,7 +33,10 @@ function SelectSTI() {
     copyPixelRow: "Copy Pixels by Row",
     histDiffCol: "Histogram Difference by Column",
     histDiffRow: "Histogram Difference by Row",
-    IBMdiffCol: "IBM Difference by Column"
+    IBMdiffColRGB: "{R,G,B} IBM Difference by Column",
+    IBMdiffRowRGB: "{R,G,B} IBM Difference by Row",
+    IBMdiffColChr: "Chromaticity IBM Difference by Column",
+    IBMdiffRowChr: "Chromaticity IBM Difference by Row",
   };
   return (
     <div>

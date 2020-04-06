@@ -34,8 +34,8 @@ def readFrames(video, mode):
             col = generateSTIColumnByCol(frame, oldFrame)
 
         STI = np.c_[STI, col]
-
         oldFrame = frame
+        
         # encode the frame in JPEG format
         (flag, encodedImage) = cv2.imencode(".jpg", STI[:, 1:]*255)
 

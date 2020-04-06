@@ -13,11 +13,17 @@ def generateSTI(videoPath, typeSTI):
         return histDiff.generateByCol(videoPath)
     elif(typeSTI == "histDiffRow"):
         return histDiff.generateByRow(videoPath)
+    elif(typeSTI == "IBMdiffColRGB"):
+        return IBM.generateByColRGB(videoPath)
+    elif(typeSTI == "IBMdiffRowRGB"):
+        return IBM.generateByRowRGB(videoPath)
+    elif(typeSTI == "IBMdiffRowChr"):
+        return IBM.generateByRowChr(videoPath)
+    elif(typeSTI == "IBMdiffColChr"):
+        return IBM.generateByColChr(videoPath)
     elif(typeSTI == "copyPixelCol"):
         return Response(copyPixel.copyPixel(videoPath, "col"), mimetype='multipart/x-mixed-replace; boundary=frame')
     elif(typeSTI == "copyPixelRow"):
         return Response(copyPixel.copyPixel(videoPath, "row"), mimetype='multipart/x-mixed-replace; boundary=frame')
-    elif(typeSTI == "IBMdiffCol"):
-        return IBM.generateByCol(videoPath)
         # Write to file
     #cv2.imwrite(APP_ROOT + '/images/STI.jpg', STI)
