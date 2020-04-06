@@ -1,58 +1,41 @@
 import numpy as np
-from numpy.linalg import norm #For l2 norm
+from numpy.linalg import norm  # For L2 norm
 import cv2
-import math
+import math  # For math.sqrt()
 from flask import Response
 
 
-# Generate and Save a Spatio-Temportal Image (STI) by Row using {R,G,B} L2 Norm
-def generateByRowRGB(videoPath):
+# Generate an STI in the manner specified by mode
+def generateSTI(videoPath, mode):
     video = cv2.VideoCapture(videoPath)
-    return Response(readFrames(video, "rowRGB"), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-# Generate and Save a Spatio-Temportal Image (STI) by Col using {R,G,B} L2 Norm
-def generateByColRGB(videoPath):
-    video = cv2.VideoCapture(videoPath)
-    return Response(readFrames(video, "colRGB"), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-# Generate and Save a Spatio-Temportal Image (STI) by Row  using {r,g} L2 Norm
-def generateByRowChr(videoPath):
-    video = cv2.VideoCapture(videoPath)
-    return Response(readFrames(video, "rowChr"), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-# Generate and Save a Spatio-Temportal Image (STI) by Col  using {r,g} L2 Norm
-def generateByColChr(videoPath):
-    video = cv2.VideoCapture(videoPath)
-    return Response(readFrames(video, "colChr"), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(readFrames(video, mode), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 # Read the video frame-by-frame to generate an STI
 def readFrames(video, mode):
     ret, oldFrame = video.read()
-    if not ret:
-        raise Exception("Failed to read video")
+    if not ret: raise Exception("Failed to read video")
+
+    # Resize and normalize such that values exist in [0,1]
+    oldFrame = cv2.resize(oldFrame, (64, 64))
+    oldFrame = oldFrame / 255
+
     STI = np.zeros((64, 1))
 
+    # Iterate over all frames in the video and generate an STI
     while(video.isOpened()):
-        ret, frame = video.read()
+        ret, newFrame = video.read()
         if(ret is False):
             break  # End of video
 
-        # Generate the STI row by row or col by col
-        if (mode == "rowRGB"):
-            col = generateSTIColumnByRow(frame, oldFrame, "RGB")
-        elif (mode == "colRGB"):
-            col = generateSTIColumnByCol(frame, oldFrame, "RGB")
-        elif (mode == "rowChr"):
-            col = generateSTIColumnByRow(frame, oldFrame, "Chromaticity")
-        elif (mode == "colChr"):
-            col = generateSTIColumnByCol(frame, oldFrame, "Chromaticity")
-
+        # Resize and normalize such that values exist in [0,1]
+        newFrame = cv2.resize(newFrame, (64, 64))
+        newFrame = newFrame / 255 
+        
+        # Generate the STI column
+        col = generateSTIColumn(newFrame, oldFrame, mode)
         STI = np.c_[STI, col]
-        oldFrame = frame
+        oldFrame = newFrame
 
         # encode the frame in JPEG format
         (flag, encodedImage) = cv2.imencode(".jpg", STI[:, 1:]*255)
@@ -64,78 +47,75 @@ def readFrames(video, mode):
 
 # Uses the IBM method from the project outline to generate an STI column
 # Frame needs to be resized to a number that is a perfect square and cube
-def generateSTIColumnByCol(newFrame, oldFrame, mode):
-    newFrame = cv2.resize(newFrame, (64, 64))  # Resize to 64 cols x 64 rows
-    oldFrame = cv2.resize(oldFrame, (64, 64))  # Resize to 64 cols x 64 rows
-    newFrame = newFrame / 255  # Normalize values
-    oldFrame = oldFrame / 255  # Normalize values
+def generateSTIColumn(newFrame, oldFrame, mode):
+
     STIcol = np.zeros((64,1))
 
-    A = makeNearnessMatrix(newFrame, oldFrame, mode) # Generate nearness matrix
+    # Generate nearness matrix
+    A = makeNearnessMatrix(newFrame, oldFrame, mode) 
 
-    for j in range(64):
-        z  = makeZ(newFrame[:,j], oldFrame[:,j], mode)
-        zt = np.transpose(z)
-        Az = np.matmul(A, z)
-        STIcol[j-1, :] = np.matmul(zt, Az)
+    # If moving column by column
+    if (mode == "colRGB" or mode == "colChr"):
+        for j in range(64):
+            z  = makeZ(newFrame[:,j], oldFrame[:,j], mode)
+            zt = np.transpose(z)
+            Az = np.matmul(A, z)
+            STIcol[j-1, :] = np.matmul(zt, Az)
+
+    # If moving row by row
+    elif (mode == "rowRGB" or mode == "rowChr"):
+        for i in range(64):
+            z  = makeZ(newFrame[i,:], oldFrame[i,:], mode)
+            zt = np.transpose(z)
+            Az = np.matmul(A, z)
+            STIcol[i-1, :] = np.matmul(zt, Az)
+
     return STIcol
 
 
-# Uses the IBM method from the project outline to generate an STI column
-# Frame needs to be resized to a number that is a perfect square and cube
-def generateSTIColumnByRow(newFrame, oldFrame, mode):
-    newFrame = cv2.resize(newFrame, (64, 64))  # Resize to 64 cols x 64 rows
-    oldFrame = cv2.resize(oldFrame, (64, 64))  # Resize to 64 cols x 64 rows
-    newFrame = newFrame / 255  # Normalize values
-    oldFrame = oldFrame / 255  # Normalize values
-    STIcol = np.zeros((64,1))
-
-    A = makeNearnessMatrix(newFrame, oldFrame, mode) # Generate nearness matrix
-
-    for i in range(64):
-        z  = makeZ(newFrame[i,:], oldFrame[i,:], mode)
-        zt = np.transpose(z)
-        Az = np.matmul(A, z)
-        STIcol[i-1, :] = np.matmul(zt, Az)
-    return STIcol
-
-
-# Generate the A nearness matrix
-# Note: Aij is closer to 1 for small differences
+# Generate the nearness matrix A using L2 norm (i.e. Euclidian Distance Norm)
 def makeNearnessMatrix(newFrame, oldFrame, mode):
     A = np.zeros((64,64))
 
-    if (mode == "RGB"):
+    # If mode is RGB, make A using the L2 norm of RGB values
+    if (mode == "rowRGB" or mode == "colRGB"):
         dmax = math.sqrt(3)
         for i in range(64):
             for j in range(64):
                 A[i,j] = 1 - (norm(newFrame[i,j] - oldFrame[i,j]) / dmax)
-    
-    elif (mode == "Chromaticity"):
+
+    # If mode is Chromaticity, make A using the L2 norm of Luminensce values 
+    elif (mode == "rowChr" or mode == "colChr"):
         dmax = math.sqrt(2)
         for i in range(64):
             for j in range(64):
                 oldChromaticity = RGBtoChromaticity(oldFrame[i,j])
                 newChromaticity = RGBtoChromaticity(newFrame[i,j])
                 A[i,j] = 1 - (norm(newChromaticity - oldChromaticity) / dmax)
+
     return A
 
 
-# Generate the Z column
+# Generate the histogram difference column z
 def makeZ(newCol, oldCol, mode):
+    z = np.ones((64,1))
 
-    if (mode == "RGB"):
+    # Using RGB Values
+    if (mode == "rowRGB" or mode == "colRGB"):
         Hold = makeColorHistogram(oldCol)
         Hnew = makeColorHistogram(newCol)
-    
-    elif (mode == "Chromaticity"):
+
+    # Using Luminensce Values
+    elif (mode == "rowChr" or mode == "colChr"):
         Hold = makeLuminenceHistogram(oldCol)
         Hnew = makeLuminenceHistogram(newCol)
 
-    Hdiff = abs(Hnew - Hold) / 64  # Normalize
+    # Normalize values to be in range [0 1] 
+    Hdiff = abs(Hnew - Hold) / 64  
 
-    z = np.ones((64,1))
-    z[:,0] = np.matrix.flatten(Hdiff)  # Flatten
+    # Flatten histogram
+    z[:,0] = np.matrix.flatten(Hdiff) 
+
     return z
 
 
@@ -145,16 +125,19 @@ def makeColorHistogram(vector):
     return hist[0]
 
 
-# Create a 2D luminence histogram from a frame vector
+# Create a 2D luminence histogram from a frame vector (64 total bins)
 def makeLuminenceHistogram(vector):
-    rVals = []
-    gVals = []
+    r = []  # Make an array of r values
+    g = []  # Make an array of g values
+
+    # Iterate through the vector and gather all r,g values
     for i in range(32):
         chromaticity = RGBtoChromaticity(vector[i])
-        rVals.append(chromaticity[0, 0])
-        gVals.append(chromaticity[0, 1])
-    hist = np.histogram2d(rVals, gVals, bins=8, range=[
-                          [0, 1], [0, 1]], density=1)
+        r.append(chromaticity[0, 0])
+        g.append(chromaticity[0, 1])
+
+    # Create a luminensce histogram with 8*8 = 64 bins
+    hist = np.histogram2d(r, g, bins=8, range=[[0, 1], [0, 1]], density=1)
     return hist[0]
 
 

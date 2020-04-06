@@ -14,13 +14,13 @@ def generateSTI(videoPath, typeSTI):
     elif(typeSTI == "histDiffRow"):
         return histDiff.generateByRow(videoPath)
     elif(typeSTI == "IBMdiffColRGB"):
-        return IBM.generateByColRGB(videoPath)
+        return IBM.generateSTI(videoPath, "colRGB")
     elif(typeSTI == "IBMdiffRowRGB"):
-        return IBM.generateByRowRGB(videoPath)
+        return IBM.generateSTI(videoPath, "rowRGB")
     elif(typeSTI == "IBMdiffRowChr"):
-        return IBM.generateByRowChr(videoPath)
+        return IBM.generateSTI(videoPath, "rowChr")
     elif(typeSTI == "IBMdiffColChr"):
-        return IBM.generateByColChr(videoPath)
+        return IBM.generateSTI(videoPath, "colChr")
     elif(typeSTI == "copyPixelCol"):
         return Response(copyPixel.copyPixel(videoPath, "col"), mimetype='multipart/x-mixed-replace; boundary=frame')
     elif(typeSTI == "copyPixelRow"):
