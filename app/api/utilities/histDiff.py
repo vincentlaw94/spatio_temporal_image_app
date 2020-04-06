@@ -2,39 +2,40 @@ import numpy as np
 import cv2
 from flask import Response
 
-# Generate and Save a Spatio-Temportal Image (STI) by Row
-def generateByRow(videoPath):
+
+# Generate an STI in the manner specified by mode
+def generateSTI(videoPath, mode):
     video = cv2.VideoCapture(videoPath)
-    return Response(readFrames(video, "row"), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-# Generate and Save a Spatio-Temportal Image (STI) by Column
-def generateByCol(videoPath):
-
-    video = cv2.VideoCapture(videoPath)
-    return Response(readFrames(video, "col"), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(readFrames(video, mode), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 # Read the video frame-by-frame to generate an STI
 def readFrames(video, mode):
     ret, oldFrame = video.read()
-    if not ret:
-        raise Exception("Failed to read video")
+    if not ret: raise Exception("Failed to read video")
+
+    # Resize normalize such that values exist in [0,1]
+    oldFrame = cv2.resize(oldFrame, (32, 32))
+    oldFrame = oldFrame / 255
+
     STI = np.zeros((32, 1))
 
     while(video.isOpened()):
-        ret, frame = video.read()
+        ret, newFrame = video.read()
         if(ret is False):
             break  # End of video
 
-        # Generate the STI row by row or col by col
+        # Resize and normalize such that values exist in [0,1]
+        newFrame = cv2.resize(newFrame, (32, 32))
+        newFrame = newFrame / 255
+        
+        # Generate the STI column
         if (mode == "row"):
-            col = generateSTIColumnByRow(frame, oldFrame)
+            col = generateSTIColumnByRow(newFrame, oldFrame)
         elif(mode == "col"):
-            col = generateSTIColumnByCol(frame, oldFrame)
-
+            col = generateSTIColumnByCol(newFrame, oldFrame)
         STI = np.c_[STI, col]
-        oldFrame = frame
+        oldFrame = newFrame
         
         # encode the frame in JPEG format
         (flag, encodedImage) = cv2.imencode(".jpg", STI[:, 1:]*255)
@@ -46,21 +47,16 @@ def readFrames(video, mode):
 
 # Compares new and old frame column-by-bolumn to generate an STI column
 def generateSTIColumnByCol(newFrame, oldFrame):
-    newFrame = cv2.resize(newFrame, (32, 32))  # Resize to 32 cols x 32 rows
-    oldFrame = cv2.resize(oldFrame, (32, 32))  # Resize to 32 cols x 32 rows
     STIcol = np.zeros((32, 1))
     for j in range(32):
         Hold = makeLuminenceHistogram(oldFrame[:, j])
         Hnew = makeLuminenceHistogram(newFrame[:, j])
-        print("Printing shape of histogram: ", np.shape(Hnew))
         STIcol[j-1, :] = histogramIntersection(Hold, Hnew)
     return STIcol
 
 
 # Compares new and old frame column-by-bolumn to generate an STI column
 def generateSTIColumnByRow(newFrame, oldFrame):
-    newFrame = cv2.resize(newFrame, (32, 32))  # Resize to 32 cols x 32 rows
-    oldFrame = cv2.resize(oldFrame, (32, 32))  # Resize to 32 cols x 32 rows
     STIcol = np.zeros((32, 1))
     for i in range(32):
         Hold = makeLuminenceHistogram(oldFrame[i, :])
@@ -71,14 +67,17 @@ def generateSTIColumnByRow(newFrame, oldFrame):
 
 # Create a 2D luminence histogram from a frame vector
 def makeLuminenceHistogram(vector):
-    rVals = []
-    gVals = []
+    r = []  # Make an array of r values
+    g = []  # Make an array of g values
+
+    # Iterate through the vector and gather all r,g values
     for i in range(32):
         chromaticity = RGBtoChromaticity(vector[i])
-        rVals.append(chromaticity[0, 0])
-        gVals.append(chromaticity[0, 1])
-    hist = np.histogram2d(rVals, gVals, bins=10, range=[
-                          [0, 1], [0, 1]], density=1)
+        r.append(chromaticity[0, 0])  # r value
+        g.append(chromaticity[0, 1])  # g value
+
+    # Create a luminensce histogram with 8*8 = 64 bins
+    hist = np.histogram2d(r, g, bins=10, range=[[0, 1], [0, 1]], density=1)
     return hist[0]
 
 
@@ -88,13 +87,13 @@ def histogramIntersection(Hold, Hnew):
     I = 0
     for i in range(10):
         for j in range(10):
-            I += (min(Hold[i, j], Hnew[i, j])) / 100  # Normalization
+            I += (min(Hold[i, j], Hnew[i, j])) / 100  # Normalize values
     return I
 
 
 # Returns (r,g) from (R, G, B)
 def RGBtoChromaticity(pixel):
-    sumRGB = sum(pixel) + 1  # Add one to account for black (0, 0, 0)
+    sumRGB = sum(pixel) + (1/255)  # Add one to account for black (0, 0, 0)
     chromaticity = np.zeros((1, 2))
     chromaticity[0, 0] = pixel[0] / sumRGB  # r value
     chromaticity[0, 1] = pixel[1] / sumRGB  # g value

@@ -48,7 +48,6 @@ def readFrames(video, mode):
 # Uses the IBM method from the project outline to generate an STI column
 # Frame needs to be resized to a number that is a perfect square and cube
 def generateSTIColumn(newFrame, oldFrame, mode):
-
     STIcol = np.zeros((64,1))
 
     # Generate nearness matrix
@@ -92,7 +91,6 @@ def makeNearnessMatrix(newFrame, oldFrame, mode):
                 oldChromaticity = RGBtoChromaticity(oldFrame[i,j])
                 newChromaticity = RGBtoChromaticity(newFrame[i,j])
                 A[i,j] = 1 - (norm(newChromaticity - oldChromaticity) / dmax)
-
     return A
 
 
@@ -115,7 +113,6 @@ def makeZ(newCol, oldCol, mode):
 
     # Flatten histogram
     z[:,0] = np.matrix.flatten(Hdiff) 
-
     return z
 
 
@@ -143,7 +140,7 @@ def makeLuminenceHistogram(vector):
 
 # Returns (r,g) from (R, G, B)
 def RGBtoChromaticity(pixel):
-    sumRGB = sum(pixel) + 1  # Add one to account for black (0, 0, 0)
+    sumRGB = sum(pixel) + (1/255)  # Add one to account for black (0, 0, 0)
     chromaticity = np.zeros((1, 2))
     chromaticity[0, 0] = pixel[0] / sumRGB  # r value
     chromaticity[0, 1] = pixel[1] / sumRGB  # g value
