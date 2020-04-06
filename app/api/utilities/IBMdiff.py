@@ -38,6 +38,7 @@ def readFrames(video):
 
 
 # Uses the IBM method from the project outline to generate an STI column
+# Frame needs to be resized to a number that is a perfect square and cube
 def generateSTIColumnByIBM(newFrame, oldFrame):
     newFrame = cv2.resize(newFrame, (64, 64))  # Resize to 64 cols x 64 rows
     oldFrame = cv2.resize(oldFrame, (64, 64))  # Resize to 64 cols x 64 rows
@@ -51,7 +52,7 @@ def generateSTIColumnByIBM(newFrame, oldFrame):
         z  = makeZ(newFrame[:,j], oldFrame[:,j])
         zt = np.transpose(z)
         Az = np.matmul(A, z)
-        STIcol[j-1, :] = 1 - np.matmul(zt, Az) # Invert colors (dark <==> diff)
+        STIcol[j-1, :] = np.matmul(zt, Az)
     return STIcol
 
 
@@ -70,12 +71,10 @@ def makeNearnessMatrix(newFrame, oldFrame):
 def makeZ(newCol, oldCol):
     Hold = makeColorHistogram(oldCol)
     Hnew = makeColorHistogram(newCol)
-    Hdiff = abs(Hnew - Hold) / 64 # Normalize
+    Hdiff = abs(Hnew - Hold) / 64  # Normalize
 
-    flatZ = np.matrix.flatten(Hdiff)
     z = np.ones((64,1))
-    z[:,0] = flatZ
-
+    z[:,0] = np.matrix.flatten(Hdiff)  # Flatten
     return z
 
 
