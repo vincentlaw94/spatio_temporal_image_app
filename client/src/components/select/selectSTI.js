@@ -32,7 +32,8 @@ function SelectSTI() {
     copyPixelCol: "Copy Pixels by Column",
     copyPixelRow: "Copy Pixels by Row",
     histDiffCol: "Histogram Difference by Column",
-    histDiffRow: "Histogram Difference by Row"
+    histDiffRow: "Histogram Difference by Row",
+    IBMdiffCol: "IBM Difference by Column"
   };
   return (
     <div>

@@ -3,8 +3,6 @@ import cv2
 from flask import Response
 
 # Generate and Save a Spatio-Temportal Image (STI) by Row
-
-
 def generateByRow(videoPath):
     video = cv2.VideoCapture(videoPath)
     return Response(readFrames(video, "row"), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -54,6 +52,7 @@ def generateSTIColumnByCol(newFrame, oldFrame):
     for j in range(32):
         Hold = makeLuminenceHistogram(oldFrame[:, j])
         Hnew = makeLuminenceHistogram(newFrame[:, j])
+        print("Printing shape of histogram: ", np.shape(Hnew))
         STIcol[j-1, :] = histogramIntersection(Hold, Hnew)
     return STIcol
 
@@ -63,10 +62,10 @@ def generateSTIColumnByRow(newFrame, oldFrame):
     newFrame = cv2.resize(newFrame, (32, 32))  # Resize to 32 cols x 32 rows
     oldFrame = cv2.resize(oldFrame, (32, 32))  # Resize to 32 cols x 32 rows
     STIcol = np.zeros((32, 1))
-    for j in range(32):
-        Hold = makeLuminenceHistogram(oldFrame[j, :])
-        Hnew = makeLuminenceHistogram(newFrame[j, :])
-        STIcol[j-1, :] = histogramIntersection(Hold, Hnew)
+    for i in range(32):
+        Hold = makeLuminenceHistogram(oldFrame[i, :])
+        Hnew = makeLuminenceHistogram(newFrame[i, :])
+        STIcol[i-1, :] = histogramIntersection(Hold, Hnew)
     return STIcol
 
 
