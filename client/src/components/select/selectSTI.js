@@ -6,8 +6,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 
-import { useSelector, useDispatch } from "react-redux";
-import { setURL, setFileName, setSTI } from "../../actions";
+import { useDispatch } from "react-redux";
+import { setSTI } from "../../actions";
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -29,14 +29,11 @@ function SelectSTI() {
   };
 
   const transition = {
-    copyPixelCol: "Copy Pixels by Column",
-    copyPixelRow: "Copy Pixels by Row",
-    histDiffCol: "Histogram Difference by Column",
-    histDiffRow: "Histogram Difference by Row",
-    IBMdiffColRGB: "(R,G,B) IBM Difference by Column",
-    IBMdiffRowRGB: "(R,G,B) IBM Difference by Row",
-    IBMdiffColChr: "Chromaticity IBM Difference by Column",
-    IBMdiffRowChr: "Chromaticity IBM Difference by Row",
+    copyPixel: "Copy Pixels",
+
+    histDiff: "Histogram Difference",
+
+    IBMdiff: "IBM Difference"
   };
   return (
     <div>

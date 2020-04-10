@@ -8,23 +8,28 @@ APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Switchboard for calling different STI methods
-def generateSTI(videoPath, typeSTI):
+def generateSTI(videoPath, typeSTI, STIRadio, threshold, IBMRadio):
+    print(threshold)
 
-    if(typeSTI == "histDiffCol"):
-        return histDiff.generateSTI(videoPath, "col")
-    elif(typeSTI == "histDiffRow"):
-        return histDiff.generateSTI(videoPath, "row")
-    elif(typeSTI == "IBMdiffColRGB"):
-        return IBM.generateSTI(videoPath, "colRGB")
-    elif(typeSTI == "IBMdiffRowRGB"):
-        return IBM.generateSTI(videoPath, "rowRGB")
-    elif(typeSTI == "IBMdiffRowChr"):
-        return IBM.generateSTI(videoPath, "rowChr")
-    elif(typeSTI == "IBMdiffColChr"):
-        return IBM.generateSTI(videoPath, "colChr")
-    elif(typeSTI == "copyPixelCol"):
-        return Response(copyPixel.copyPixel(videoPath, "col"), mimetype='multipart/x-mixed-replace; boundary=frame')
-    elif(typeSTI == "copyPixelRow"):
-        return Response(copyPixel.copyPixel(videoPath, "row"), mimetype='multipart/x-mixed-replace; boundary=frame')
-        # Write to file
-    #cv2.imwrite(APP_ROOT + '/images/STI.jpg', STI)
+    if (STIRadio == "col"):
+        if(typeSTI == "histDiff"):
+            return histDiff.generateSTI(videoPath, "col")
+        elif(typeSTI == "IBMdiff"):
+            if (IBMRadio == "rbg"):
+                return IBM.generateSTI(videoPath, "colRGB")
+            elif (IBMRadio == 'chr'):
+                return IBM.generateSTI(videoPath, "colChr")
+        elif(typeSTI == "copyPixel"):
+            return Response(copyPixel.copyPixel(videoPath, "col"), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+    elif (STIRadio == "row"):
+        if(typeSTI == "histDiff"):
+            return histDiff.generateSTI(videoPath, "row")
+        elif(typeSTI == "IBMdiff"):
+            if (IBMRadio == 'rbg'):
+                return IBM.generateSTI(videoPath, "rowRGB")
+            elif(IBMRadio == 'chr'):
+                return IBM.generateSTI(videoPath, "rowChr")
+
+        elif(typeSTI == "copyPixel"):
+            return Response(copyPixel.copyPixel(videoPath, "row"), mimetype='multipart/x-mixed-replace; boundary=frame')

@@ -38,6 +38,7 @@ function SelectVideo() {
           displayEmpty
           onChange={handleChange}
           className={classes.selectEmpty}
+          value={v.fileName}
         >
           <MenuItem value="" disabled>
             Select Video

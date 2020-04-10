@@ -31,3 +31,22 @@ export const setSTI = typeSTI => {
     payload: typeSTI
   };
 };
+
+export const setSTIRadio = typeRadio => {
+  return {
+    type: "SET_STI_RADIO",
+    payload: typeRadio
+  };
+};
+export const setIBMRadio = typeRadio => {
+  return {
+    type: "SET_IBM_RADIO",
+    payload: typeRadio
+  };
+};
+export const setThreshold = threshold => {
+  return {
+    type: "SET_THRESHOLD",
+    payload: threshold
+  };
+};

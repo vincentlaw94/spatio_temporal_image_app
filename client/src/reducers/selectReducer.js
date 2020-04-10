@@ -1,14 +1,17 @@
 const initialSelectList = {
-    typeSTI: undefined
+  typeSTI: undefined,
+  threshold: 255
 };
 
 const selectReducer = (state = initialSelectList, action) => {
-    switch (action.type) {
-        case "SET_STI":
-            return { ...state, typeSTI: action.payload };
+  switch (action.type) {
+    case "SET_STI":
+      return { ...state, typeSTI: action.payload };
+    case "SET_THRESHOLD":
+      return { ...state, threshold: action.payload };
     default:
-        return state;
-    }
+      return state;
+  }
 };
 
 export default selectReducer;
