@@ -50,3 +50,9 @@ export const setThreshold = threshold => {
     payload: threshold
   };
 };
+
+export const toggleThreshold = () => {
+  return {
+    type: "TOGGLE_THRESHOLD"
+  };
+};

@@ -8,7 +8,8 @@ APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Switchboard for calling different STI methods
-def generateSTI(videoPath, typeSTI, STIRadio, threshold, IBMRadio):
+def generateSTI(videoPath, typeSTI, STIRadio, threshold_toggle, threshold, IBMRadio):
+    print(threshold_toggle)
 
     if (STIRadio == "col"):
         if(typeSTI == "histDiff"):

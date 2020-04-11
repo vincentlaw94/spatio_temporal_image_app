@@ -27,9 +27,9 @@ def upload():
     return "fail"
 
 
-@main.route('/sti_feed/<file_name>/<sti_type>/<sti_radio>/<threshold>/<ibm_radio>')
-def sti_feed(file_name, sti_type, sti_radio, threshold, ibm_radio):
-    return generateSTI.generateSTI(os.path.join(uploads_dir, file_name), sti_type, sti_radio, threshold, ibm_radio)
+@main.route('/sti_feed/<file_name>/<sti_type>/<sti_radio>/<threshold_toggle>/<threshold_level>/<ibm_radio>')
+def sti_feed(file_name, sti_type, sti_radio, threshold_toggle, threshold_level, ibm_radio):
+    return generateSTI.generateSTI(os.path.join(uploads_dir, file_name), sti_type, sti_radio, threshold_toggle, threshold_level, ibm_radio)
 
 
 @main.route('/get_video/<file_name>')

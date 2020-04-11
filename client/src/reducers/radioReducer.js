@@ -1,6 +1,7 @@
 const initialSelectList = {
   STIRadio: "col",
-  IBMRadio: "rbg"
+  IBMRadio: "rbg",
+  threshold: true
 };
 
 const radioReducer = (state = initialSelectList, action) => {
@@ -9,6 +10,8 @@ const radioReducer = (state = initialSelectList, action) => {
       return { ...state, STIRadio: action.payload };
     case "SET_IBM_RADIO":
       return { ...state, IBMRadio: action.payload };
+    case "TOGGLE_THRESHOLD":
+      return { ...state, threshold: !state.threshold };
     default:
       return state;
   }

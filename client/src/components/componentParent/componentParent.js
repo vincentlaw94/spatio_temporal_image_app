@@ -63,6 +63,8 @@ class ComponentParent extends React.Component {
         "/" +
         this.props.STIRadio +
         "/" +
+        +this.props.thresholdToggle +
+        "/" +
         this.props.thresholdLevel +
         "/" +
         this.props.IBMRadio;
@@ -137,7 +139,8 @@ function mapStateToProps(state) {
     typeSTI: state.selection.typeSTI,
     STIRadio: state.radio.STIRadio,
     thresholdLevel: state.selection.threshold,
-    IBMRadio: state.radio.IBMRadio
+    IBMRadio: state.radio.IBMRadio,
+    thresholdToggle: state.radio.threshold
   };
 }
 const mapDispatchToProps = {
