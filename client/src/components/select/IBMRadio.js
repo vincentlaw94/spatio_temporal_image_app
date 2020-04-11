@@ -38,7 +38,7 @@ function IBMRadio() {
         row
         aria-label="position"
         name="s"
-        defaultValue="col"
+        defaultValue="rbg"
       >
         {Object.entries(selectType).map(([key, val]) => {
           return (

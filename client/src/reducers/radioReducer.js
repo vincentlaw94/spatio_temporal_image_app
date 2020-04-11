@@ -1,6 +1,6 @@
 const initialSelectList = {
   STIRadio: "col",
-  IBMRadio: "RBG"
+  IBMRadio: "rbg"
 };
 
 const radioReducer = (state = initialSelectList, action) => {

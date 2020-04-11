@@ -36,7 +36,7 @@ const styles = theme => ({
   }
 });
 
-const thresholdSTI = ["histDiff", "IBMdiffRGB", "IBMdiffChr"];
+const thresholdSTI = ["histDiff", "IBMdiff"];
 const IBM = ["IBMdiff"];
 class ComponentParent extends React.Component {
   constructor(props) {
