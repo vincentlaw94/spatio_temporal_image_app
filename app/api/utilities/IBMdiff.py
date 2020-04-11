@@ -6,13 +6,14 @@ from flask import Response
 
 
 # Generate an STI in the manner specified by mode
-def generateSTI(videoPath, mode):
+def generateSTI(videoPath, mode, threshold):
     video = cv2.VideoCapture(videoPath)
-    return Response(readFrames(video, mode), mimetype='multipart/x-mixed-replace; boundary=frame')
+    threshold = int(threshold)/255
+    return Response(readFrames(video, mode, threshold), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 # Read the video frame-by-frame to generate an STI
-def readFrames(video, mode):
+def readFrames(video, mode, threshold):
     ret, oldFrame = video.read()
     if not ret: raise Exception("Failed to read video")
 
@@ -33,7 +34,7 @@ def readFrames(video, mode):
         newFrame = newFrame / 255 
         
         # Generate the STI column
-        col = generateSTIColumn(newFrame, oldFrame, mode)
+        col = generateSTIColumn(newFrame, oldFrame, mode, threshold)
         STI = np.c_[STI, col]
         oldFrame = newFrame
 
@@ -47,7 +48,7 @@ def readFrames(video, mode):
 
 # Uses the IBM method from the project outline to generate an STI column
 # Frame needs to be resized to a number that is a perfect square and cube
-def generateSTIColumn(newFrame, oldFrame, mode):
+def generateSTIColumn(newFrame, oldFrame, mode, threshold):
     STIcol = np.zeros((64,1))
 
     # Generate nearness matrix
@@ -60,6 +61,8 @@ def generateSTIColumn(newFrame, oldFrame, mode):
             zt = np.transpose(z)
             Az = np.matmul(A, z)
             STIcol[j-1, :] = np.matmul(zt, Az)
+            if(STIcol[j-1, :] < threshold): STIcol[j-1, :] = 0
+            else:                           STIcol[j-1, :] = 1
 
     # If moving row by row
     elif (mode == "rowRGB" or mode == "rowChr"):
@@ -68,6 +71,8 @@ def generateSTIColumn(newFrame, oldFrame, mode):
             zt = np.transpose(z)
             Az = np.matmul(A, z)
             STIcol[i-1, :] = np.matmul(zt, Az)
+            if(STIcol[i-1, :] < threshold): STIcol[i-1, :] = 0
+            else:                           STIcol[i-1, :] = 1
 
     return STIcol
 
