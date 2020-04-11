@@ -4,14 +4,18 @@ from flask import Response
 
 
 # Generate an STI in the manner specified by mode
-def generateSTI(videoPath, mode, threshold):
+def generateSTI(videoPath, mode, threshold_toggle, threshold):
+
     video = cv2.VideoCapture(videoPath)
     threshold = int(threshold)/255
-    return Response(readFrames(video, mode, threshold), mimetype='multipart/x-mixed-replace; boundary=frame')
+    threshold_toggle = int(threshold_toggle)
+
+    return Response(readFrames(video, mode, threshold_toggle, threshold), 
+           mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 # Read the video frame-by-frame to generate an STI
-def readFrames(video, mode, threshold):
+def readFrames(video, mode, threshold_toggle, threshold):
     ret, oldFrame = video.read()
     if not ret: raise Exception("Failed to read video")
 
@@ -32,9 +36,9 @@ def readFrames(video, mode, threshold):
         
         # Generate the STI column
         if (mode == "row"):
-            col = generateSTIColumnByRow(newFrame, oldFrame, threshold)
+            col = generateSTIColumnByRow(newFrame, oldFrame, threshold_toggle, threshold)
         elif(mode == "col"):
-            col = generateSTIColumnByCol(newFrame, oldFrame, threshold)
+            col = generateSTIColumnByCol(newFrame, oldFrame, threshold_toggle, threshold)
         STI = np.c_[STI, col]
         oldFrame = newFrame
         
@@ -47,22 +51,22 @@ def readFrames(video, mode, threshold):
 
 
 # Compares new and old frame column-by-bolumn to generate an STI column
-def generateSTIColumnByCol(newFrame, oldFrame, threshold):
+def generateSTIColumnByCol(newFrame, oldFrame, threshold_toggle, threshold):
     STIcol = np.zeros((32, 1))
     for j in range(32):
         Hold = makeLuminenceHistogram(oldFrame[:, j])
         Hnew = makeLuminenceHistogram(newFrame[:, j])
-        STIcol[j-1, :] = histogramIntersection(Hold, Hnew, threshold)
+        STIcol[j-1, :] = histogramIntersection(Hold, Hnew, threshold_toggle, threshold)
     return STIcol
 
 
 # Compares new and old frame column-by-bolumn to generate an STI column
-def generateSTIColumnByRow(newFrame, oldFrame, threshold):
+def generateSTIColumnByRow(newFrame, oldFrame, threshold_toggle, threshold):
     STIcol = np.zeros((32, 1))
     for i in range(32):
         Hold = makeLuminenceHistogram(oldFrame[i, :])
         Hnew = makeLuminenceHistogram(newFrame[i, :])
-        STIcol[i-1, :] = histogramIntersection(Hold, Hnew, threshold)
+        STIcol[i-1, :] = histogramIntersection(Hold, Hnew, threshold_toggle, threshold)
     return STIcol
 
 
@@ -84,16 +88,18 @@ def makeLuminenceHistogram(vector):
 
 # Returns a scalar I based on histogram difference
 # Assumes Hold and Hnew are 10 x 10 Chromaticity Histograms
-def histogramIntersection(Hold, Hnew, threshold):
+def histogramIntersection(Hold, Hnew, threshold_toggle, threshold):
     I = 0
     for i in range(10):
         for j in range(10):
             I += (min(Hold[i, j], Hnew[i, j])) / 100  # Normalize values
-    print("Printing I: ", I)
-    print("Printing threshold: ", threshold)
-    if(I < threshold): return 0
-    else:              return 1
-    # return I
+
+    # Threshold values
+    if(threshold_toggle):
+        if(I < threshold): return 0
+        else:              return 1
+    else: 
+        return I
 
 
 # Returns (r,g) from (R, G, B)

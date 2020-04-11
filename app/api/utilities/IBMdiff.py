@@ -6,14 +6,18 @@ from flask import Response
 
 
 # Generate an STI in the manner specified by mode
-def generateSTI(videoPath, mode, threshold):
+def generateSTI(videoPath, mode, threshold_toggle, threshold):
+
     video = cv2.VideoCapture(videoPath)
     threshold = int(threshold)/255
-    return Response(readFrames(video, mode, threshold), mimetype='multipart/x-mixed-replace; boundary=frame')
+    threshold_toggle = int(threshold_toggle)
+    
+    return Response(readFrames(video, mode, threshold_toggle, threshold), 
+           mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 # Read the video frame-by-frame to generate an STI
-def readFrames(video, mode, threshold):
+def readFrames(video, mode, threshold_toggle, threshold):
     ret, oldFrame = video.read()
     if not ret: raise Exception("Failed to read video")
 
@@ -34,7 +38,7 @@ def readFrames(video, mode, threshold):
         newFrame = newFrame / 255 
         
         # Generate the STI column
-        col = generateSTIColumn(newFrame, oldFrame, mode, threshold)
+        col = generateSTIColumn(newFrame, oldFrame, mode, threshold_toggle, threshold)
         STI = np.c_[STI, col]
         oldFrame = newFrame
 
@@ -48,7 +52,7 @@ def readFrames(video, mode, threshold):
 
 # Uses the IBM method from the project outline to generate an STI column
 # Frame needs to be resized to a number that is a perfect square and cube
-def generateSTIColumn(newFrame, oldFrame, mode, threshold):
+def generateSTIColumn(newFrame, oldFrame, mode, threshold_toggle, threshold):
     STIcol = np.zeros((64,1))
 
     # Generate nearness matrix
@@ -61,8 +65,11 @@ def generateSTIColumn(newFrame, oldFrame, mode, threshold):
             zt = np.transpose(z)
             Az = np.matmul(A, z)
             STIcol[j-1, :] = np.matmul(zt, Az)
-            if(STIcol[j-1, :] < threshold): STIcol[j-1, :] = 0
-            else:                           STIcol[j-1, :] = 1
+
+            # Threshold values
+            if(threshold_toggle):
+                if(STIcol[j-1, :] < threshold): STIcol[j-1, :] = 0
+                else:                           STIcol[j-1, :] = 1
 
     # If moving row by row
     elif (mode == "rowRGB" or mode == "rowChr"):

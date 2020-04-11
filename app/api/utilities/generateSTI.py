@@ -9,27 +9,26 @@ APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Switchboard for calling different STI methods
 def generateSTI(videoPath, typeSTI, STIRadio, threshold_toggle, threshold, IBMRadio):
-    print(threshold_toggle)
 
     if (STIRadio == "col"):
         if(typeSTI == "histDiff"):
-            return histDiff.generateSTI(videoPath, "col", threshold)
+            return histDiff.generateSTI(videoPath, "col", threshold_toggle, threshold)
         elif(typeSTI == "IBMdiff"):
             if (IBMRadio == "rbg"):
-                return IBM.generateSTI(videoPath, "colRGB", threshold)
+                return IBM.generateSTI(videoPath, "colRGB", threshold_toggle, threshold)
             elif (IBMRadio == 'chr'):
-                return IBM.generateSTI(videoPath, "colChr", threshold)
+                return IBM.generateSTI(videoPath, "colChr", threshold_toggle, threshold)
         elif(typeSTI == "copyPixel"):
             return Response(copyPixel.copyPixel(videoPath, "col"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
     elif (STIRadio == "row"):
         if(typeSTI == "histDiff"):
-            return histDiff.generateSTI(videoPath, "row", threshold)
+            return histDiff.generateSTI(videoPath, "row", threshold_toggle, threshold)
         elif(typeSTI == "IBMdiff"):
             if (IBMRadio == 'rbg'):
-                return IBM.generateSTI(videoPath, "rowRGB", threshold)
+                return IBM.generateSTI(videoPath, "rowRGB", threshold_toggle, threshold)
             elif(IBMRadio == 'chr'):
-                return IBM.generateSTI(videoPath, "rowChr", threshold)
+                return IBM.generateSTI(videoPath, "rowChr", threshold_toggle, threshold)
 
         elif(typeSTI == "copyPixel"):
             return Response(copyPixel.copyPixel(videoPath, "row"), mimetype='multipart/x-mixed-replace; boundary=frame')
