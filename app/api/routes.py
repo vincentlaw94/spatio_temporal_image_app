@@ -13,6 +13,11 @@ images_dir = os.path.join(APP_ROOT, 'images')
 main = Blueprint("main", __name__)
 
 
+@main.route('/')
+def index():
+    return main.send_static_file('index.html')
+
+
 @main.route('/upload', methods=['POST'])
 def upload():
 
