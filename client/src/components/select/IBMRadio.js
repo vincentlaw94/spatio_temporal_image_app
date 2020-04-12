@@ -28,7 +28,7 @@ function IBMRadio() {
   };
 
   const selectType = {
-    rbg: "RBG",
+    rbg: "RGB",
     chr: "Chromaticity"
   };
   return (
