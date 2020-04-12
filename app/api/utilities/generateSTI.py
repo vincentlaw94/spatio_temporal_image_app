@@ -1,9 +1,9 @@
 import cv2
 import os
 from flask import Response
-import app.api.utilities.histDiff as histDiff
-import app.api.utilities.copyPixel as copyPixel
-import app.api.utilities.IBMdiff as IBM
+import .app.api.utilities.histDiff as histDiff
+import .app.api.utilities.copyPixel as copyPixel
+import .app.api.utilities.IBMdiff as IBM
 APP_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
