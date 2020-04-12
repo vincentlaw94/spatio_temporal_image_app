@@ -5,12 +5,14 @@ import os
 
 def create_app():
     """ Factory function to start application  """
-    app = Flask(__name__, static_url_path='', static_folder='client/build')
+    app = Flask(__name__, static_url_path='', static_folder='../client/build')
 
     app.url_map.strict_slashes = False
 
     register_blueprints(app)
-
+    @app.route('/')
+    def index():
+        return app.send_static_file('index.html')
     return app
 
 
