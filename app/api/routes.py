@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, send_from_directory, abort, Response
 
 import os
-from app.api.utilities import generateSTI as generateSTI
+from .utilities import generateSTI as generateSTI
 
 import numpy as np
 import cv2
